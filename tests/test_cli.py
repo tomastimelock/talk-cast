@@ -8,6 +8,7 @@
 # Configuration: None
 from __future__ import annotations
 
+import importlib
 import json
 from pathlib import Path
 from unittest.mock import patch
@@ -15,6 +16,10 @@ from unittest.mock import patch
 import pytest
 
 from talk_cast.cli import main
+
+# importlib bypasses the function re-exported via talk_cast/__init__.py
+# so we get the actual submodule, not the function shadowing it on the package namespace.
+_narrate_module = importlib.import_module("talk_cast.narrate")
 
 
 def _write_deck(path: Path) -> None:
@@ -55,7 +60,7 @@ def test_valid_deck_calls_narrate(tmp_path: Path) -> None:
     _write_deck(deck_file)
     output = tmp_path / "out.mp4"
 
-    with patch("talk_cast.narrate.narrate") as mock_narrate:
+    with patch.object(_narrate_module, "narrate") as mock_narrate:
         mock_narrate.return_value = output
         rc = main([str(deck_file), "--output", str(output)])
 
@@ -68,7 +73,7 @@ def test_voice_flag_sets_voice_id(tmp_path: Path) -> None:
     _write_deck(deck_file)
     output = tmp_path / "out.mp4"
 
-    with patch("talk_cast.narrate.narrate") as mock_narrate:
+    with patch.object(_narrate_module, "narrate") as mock_narrate:
         mock_narrate.return_value = output
         rc = main([str(deck_file), "--output", str(output), "--voice", "test_voice_123"])
 
@@ -84,7 +89,7 @@ def test_music_flag_sets_music_bed(tmp_path: Path) -> None:
     music_file.write_bytes(b"fake")
     output = tmp_path / "out.mp4"
 
-    with patch("talk_cast.narrate.narrate") as mock_narrate:
+    with patch.object(_narrate_module, "narrate") as mock_narrate:
         mock_narrate.return_value = output
         rc = main([str(deck_file), "--output", str(output), "--music", str(music_file)])
 
@@ -98,7 +103,7 @@ def test_music_db_flag_sets_music_bed_db(tmp_path: Path) -> None:
     _write_deck(deck_file)
     output = tmp_path / "out.mp4"
 
-    with patch("talk_cast.narrate.narrate") as mock_narrate:
+    with patch.object(_narrate_module, "narrate") as mock_narrate:
         mock_narrate.return_value = output
         rc = main([str(deck_file), "--output", str(output), "--music-db", "-18.0"])
 
@@ -112,7 +117,7 @@ def test_subtitles_flag_sets_subtitles(tmp_path: Path) -> None:
     _write_deck(deck_file)
     output = tmp_path / "out.mp4"
 
-    with patch("talk_cast.narrate.narrate") as mock_narrate:
+    with patch.object(_narrate_module, "narrate") as mock_narrate:
         mock_narrate.return_value = output
         rc = main([str(deck_file), "--output", str(output), "--subtitles", "soft"])
 
@@ -126,7 +131,7 @@ def test_dry_run_flag_passed_to_narrate(tmp_path: Path) -> None:
     _write_deck(deck_file)
     output = tmp_path / "out.mp4"
 
-    with patch("talk_cast.narrate.narrate") as mock_narrate:
+    with patch.object(_narrate_module, "narrate") as mock_narrate:
         mock_narrate.return_value = output
         rc = main([str(deck_file), "--output", str(output), "--dry-run"])
 
@@ -140,7 +145,7 @@ def test_no_cache_disables_cache(tmp_path: Path) -> None:
     _write_deck(deck_file)
     output = tmp_path / "out.mp4"
 
-    with patch("talk_cast.narrate.narrate") as mock_narrate:
+    with patch.object(_narrate_module, "narrate") as mock_narrate:
         mock_narrate.return_value = output
         rc = main([str(deck_file), "--output", str(output), "--no-cache"])
 
@@ -155,7 +160,7 @@ def test_narrate_exception_returns_1(tmp_path: Path) -> None:
     _write_deck(deck_file)
     output = tmp_path / "out.mp4"
 
-    with patch("talk_cast.narrate.narrate", side_effect=RuntimeError("boom")):
+    with patch.object(_narrate_module, "narrate", side_effect=RuntimeError("boom")):
         rc = main([str(deck_file), "--output", str(output)])
 
     assert rc == 1
