@@ -1,0 +1,53 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+MANIFEST.local
+
+# Unit test / coverage reports
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+htmlcov/
+coverage.xml
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# mypy / ruff
+.mypy_cache/
+.ruff_cache/
+
+# PyCharm / VS Code
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Playwright browsers
+**/playwright-browsers/
+ms-playwright/
+
+# talk-cast TTS + frame cache
+.talk-cast-cache/
+*.mp3
+*.wav
+*.mp4
+!tests/fixtures/*.wav
+
+# Generated test fixtures
+tests/fixtures/*.pptx
+tests/fixtures/*.pdf
+tests/fixtures/*.png
